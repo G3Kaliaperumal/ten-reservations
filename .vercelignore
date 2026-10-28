@@ -1,0 +1,25 @@
+# Never upload local state, credentials, private notes, or supplied member data.
+.git/
+.local/
+.venv/
+.vercel/
+artifacts/
+*.sqlite3
+*.sqlite3-*
+.env
+.env.*
+*.pem
+*.key
+*.docx
+README.personal.md
+members.csv
+inventory.csv
+
+# Install dependencies and build from source in the deployment environment.
+**/node_modules/
+**/__pycache__/
+**/*.py[cod]
+frontend/.angular/
+frontend/dist/
+frontend/coverage/
+staticfiles/
