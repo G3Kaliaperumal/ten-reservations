@@ -1,0 +1,44 @@
+<div class="auth-page">
+  <main class="auth-card" id="main">
+    <span class="brand-mark" aria-hidden="true">ten</span>
+    <p class="auth-kicker">The reservations desk</p>
+    <h1>Welcome back.</h1>
+    <p class="auth-intro">Sign in to look after your members’ next great experience.</p>
+    @if (error()) {
+      <div class="auth-error" role="alert">{{ error() }}</div>
+    }
+    <form class="auth-form" (ngSubmit)="submit()" [attr.aria-busy]="busy()">
+      <div>
+        <label for="username">Username</label
+        ><input
+          id="username"
+          name="username"
+          type="text"
+          autocomplete="username"
+          maxlength="150"
+          required
+          [(ngModel)]="username"
+          [disabled]="busy()"
+        />
+      </div>
+      <div>
+        <label for="password">Password</label
+        ><input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          [(ngModel)]="password"
+          [disabled]="busy()"
+        />
+      </div>
+      <button class="button" type="submit" [disabled]="busy()">
+        {{ busy() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+    <p class="auth-note">
+      Access is reserved for authorised staff. Contact your administrator if you need an account.
+    </p>
+  </main>
+</div>

@@ -1,0 +1,22 @@
+{
+  "/api/**": {
+    "target": "http://127.0.0.1:8000",
+    "secure": false,
+    "changeOrigin": false
+  },
+  "/book": {
+    "target": "http://127.0.0.1:8000",
+    "secure": false,
+    "changeOrigin": false
+  },
+  "/cancel": {
+    "target": "http://127.0.0.1:8000",
+    "secure": false,
+    "changeOrigin": false
+  },
+  "/static/**": {
+    "target": "http://127.0.0.1:8000",
+    "secure": false,
+    "changeOrigin": false
+  }
+}

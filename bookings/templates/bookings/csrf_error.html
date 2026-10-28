@@ -1,0 +1,3 @@
+{% extends 'bookings/base.html' %}
+{% block title %}Refresh the form{% endblock %}
+{% block content %}<div class="empty-state"><h1>Please refresh the form</h1><p>The form’s security token is missing or expired. Open the booking page again and retry.</p><a class="button" href="{% url 'booking_page' %}">Open bookings</a></div>{% endblock %}

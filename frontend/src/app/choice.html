@@ -1,0 +1,100 @@
+<div class="form-field">
+  <label [for]="controlId()">{{ label() }}</label>
+  <div
+    class="choice"
+    [attr.data-kind]="kind()"
+    [class.is-open]="opened()"
+    [class.is-searching]="opened() && search()"
+    [class.has-error]="error()"
+    (focusout)="blur($event)"
+  >
+    <div class="choice-control">
+      <span class="choice-avatar" aria-hidden="true">{{
+        selected()?.avatar || (kind() === 'member' ? '○' : '◇')
+      }}</span>
+      <div class="choice-text">
+        <input
+          class="choice-input"
+          [id]="controlId()"
+          type="text"
+          role="combobox"
+          autocomplete="off"
+          [spellcheck]="false"
+          [disabled]="disabled()"
+          aria-autocomplete="list"
+          aria-required="true"
+          [attr.aria-expanded]="opened()"
+          [attr.aria-controls]="controlId() + '-list'"
+          [attr.aria-invalid]="!!error()"
+          [attr.aria-describedby]="error() ? controlId() + '-error' : controlId() + '-hint'"
+          [attr.aria-activedescendant]="
+            opened() && filtered().length ? controlId() + '-option-' + active() : null
+          "
+          [placeholder]="'Choose a ' + kind()"
+          [value]="opened() ? search() : selected()?.label || ''"
+          (focus)="open()"
+          (click)="open()"
+          (input)="searchInput($event)"
+          (keydown)="key($event)"
+        />
+        <span class="choice-detail" [id]="controlId() + '-hint'">{{
+          selected()?.detail || 'Search by name or ID'
+        }}</span>
+      </div>
+      @if (selected(); as selected) {
+        <span class="choice-selected-badge" [attr.data-tone]="selected.tone">{{
+          selected.badge
+        }}</span>
+      }
+      <button
+        type="button"
+        class="choice-toggle"
+        tabindex="-1"
+        [disabled]="disabled()"
+        [attr.aria-label]="'Show ' + kind() + ' choices'"
+        (pointerdown)="$event.preventDefault()"
+        (click)="toggle()"
+      >
+        <app-icon name="caret" />
+      </button>
+    </div>
+    <div class="choice-menu" [class.opens-up]="opensUp()" [hidden]="!opened()">
+      <p class="choice-result-count" role="status">
+        {{ filtered().length }} {{ kind() }}{{ filtered().length === 1 ? '' : 's' }}
+      </p>
+      <div
+        class="choice-options"
+        role="listbox"
+        [id]="controlId() + '-list'"
+        [attr.aria-label]="label() + ' choices'"
+      >
+        @for (choice of filtered(); track choice.id; let index = $index) {
+          <div
+            class="choice-option"
+            role="option"
+            [id]="controlId() + '-option-' + index"
+            [attr.aria-selected]="choice.id === value()"
+            [attr.aria-disabled]="!!choice.disabled"
+            [class.is-active]="index === active()"
+            (pointerdown)="$event.preventDefault()"
+            (click)="choose(choice)"
+          >
+            <span class="choice-avatar" aria-hidden="true">{{ choice.avatar }}</span>
+            <div class="choice-text">
+              <span class="choice-option-label">{{ choice.label }}</span
+              ><span class="choice-option-detail">{{ choice.detail }}</span>
+            </div>
+            <span class="choice-option-badge" [attr.data-tone]="choice.tone">{{
+              choice.badge
+            }}</span>
+          </div>
+        } @empty {
+          <p class="choice-empty">No matching {{ kind() }}s. Try another name or ID.</p>
+        }
+      </div>
+    </div>
+    @if (error()) {
+      <p class="choice-error" [id]="controlId() + '-error'">{{ error() }}</p>
+    }
+  </div>
+</div>

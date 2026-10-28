@@ -1,0 +1,319 @@
+/* Angular components reuse the original shared design tokens and visual language. */
+app-root,
+app-layout,
+app-inventory,
+app-bookings,
+app-choice,
+app-login {
+  display: block;
+}
+.search-field > app-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+.search-field > app-icon svg {
+  position: static;
+  transform: none;
+}
+.auth-kicker {
+  font-size: 0.83rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.loading-state {
+  padding: 64px 20px;
+  color: var(--muted);
+  text-align: center;
+}
+.error-notice {
+  border-color: #ebbdc6;
+  background: #fff4f6;
+  color: var(--danger);
+}
+.form-error {
+  margin-bottom: 20px;
+}
+.member-count-help {
+  margin-top: -14px;
+  margin-bottom: 22px;
+}
+.member-policy > app-icon {
+  color: var(--plum);
+  margin-bottom: 16px;
+}
+.member-policy > app-icon svg {
+  width: 30px;
+  height: 30px;
+}
+.choice-toggle app-icon {
+  pointer-events: none;
+}
+app-select {
+  display: inline-block;
+  min-width: 0;
+}
+.compact-select-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.compact-select-field > label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.compact-choice {
+  min-width: 150px;
+}
+.compact-choice > .choice-control {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  gap: 12px;
+  border: 1px solid #d7d0e2;
+  border-radius: 9px;
+  text-align: left;
+  color: var(--ink);
+  background: white;
+  cursor: pointer;
+}
+.compact-choice-label {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.compact-choice .choice-control:disabled {
+  cursor: default;
+  color: var(--muted);
+  background: var(--canvas);
+}
+.compact-choice .choice-control app-icon svg {
+  width: 17px;
+  height: 17px;
+  color: var(--muted);
+}
+.compact-choice.is-open .choice-control app-icon {
+  transform: rotate(180deg);
+}
+.compact-choice .choice-menu {
+  min-width: 220px;
+  left: auto;
+  right: 0;
+}
+.compact-choice .choice-option {
+  min-height: 40px;
+}
+.compact-choice .choice-option app-icon svg {
+  width: 17px;
+  height: 17px;
+  color: var(--plum);
+}
+.choice-selected-badge[data-tone='exceeded'],
+.choice-option-badge[data-tone='exceeded'] {
+  max-width: 112px;
+  white-space: normal;
+}
+.quick-filters {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.quick-filters button {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: white;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+.quick-filters button span {
+  min-width: 23px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--canvas);
+  font-size: 0.74rem;
+}
+.quick-filters button.is-selected {
+  background: var(--lavender);
+  color: var(--plum);
+  border-color: #c7b7df;
+  font-weight: 600;
+}
+.quick-filters .expired-filter.is-selected {
+  background: #fff0f2;
+  color: var(--danger);
+  border-color: #e4b4bf;
+}
+.filter-note {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin: 12px 0 0;
+}
+.cover-statuses {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.badge.expired-badge {
+  color: #8c263d;
+  background: #fff0f2;
+  border: 1px solid #efbdc8;
+}
+.experience-expired {
+  border-color: #e3c4cd;
+}
+.experience-expired .experience-cover img {
+  filter: saturate(0.35);
+}
+.experience-expiry {
+  color: var(--muted);
+  font-size: 0.74rem;
+  margin: 2px 0 12px;
+}
+.experience-expiry.is-expired,
+.expiry-unavailable {
+  color: var(--danger);
+  font-weight: 600;
+}
+.choice-selected-badge[data-tone='exceeded'],
+.choice-option-badge[data-tone='exceeded'] {
+  color: #9a263e;
+  background: #ffebef;
+  border: 1px solid #edc0ca;
+  font-weight: 600;
+}
+.choice-option[aria-disabled='true'] {
+  cursor: not-allowed;
+  background: #faf8fa;
+}
+.choice-option[aria-disabled='true'] .choice-option-label {
+  color: var(--muted);
+}
+.count-warning {
+  padding: 10px 12px;
+  color: #9a263e;
+  background: #fff1f3;
+  border-left: 3px solid #c44d66;
+  border-radius: 4px;
+  font-size: 0.77rem;
+  margin: 0 0 20px;
+}
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin-top: 26px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.page-summary {
+  margin: 0 auto 0 0;
+}
+.pagination-settings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pagination select,
+.status-field select {
+  padding: 8px 10px;
+  border: 1px solid #d7d0e2;
+  border-radius: 6px;
+  color: var(--ink);
+  background: white;
+  min-height: 38px;
+}
+.pagination-navigation {
+  display: flex;
+  gap: 5px;
+}
+.pagination button {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 7px 10px;
+  min-height: 38px;
+  cursor: pointer;
+}
+.pagination button[aria-current='page'] {
+  background: var(--plum);
+  border-color: var(--plum);
+  color: white;
+}
+.pagination button:disabled {
+  color: #a29ba9;
+  background: #f5f3f7;
+  cursor: default;
+}
+.page-position {
+  flex-basis: 100%;
+  text-align: right;
+  font-size: 0.72rem;
+}
+.history-filters {
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.history-filters .search-field {
+  flex-basis: 240px;
+}
+.status-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+}
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--plum);
+  padding: 8px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+@media (max-width: 660px) {
+  .pagination-navigation {
+    flex-wrap: wrap;
+  }
+  .page-summary {
+    flex-basis: 100%;
+  }
+  .page-position {
+    text-align: left;
+  }
+}
+@media (max-width: 660px) {
+  .search-field > app-icon {
+    left: 4px;
+  }
+  .choice-control {
+    flex-wrap: wrap;
+  }
+  .choice-toggle {
+    order: 1;
+  }
+  .choice-selected-badge[data-tone='exceeded'] {
+    order: 2;
+    flex-basis: calc(100% - 45px);
+    margin-left: 45px;
+    max-width: none;
+  }
+}

@@ -1,0 +1,59 @@
+<a class="skip-link" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Application navigation">
+  <a routerLink="/" class="brand"
+    ><span class="brand-mark" aria-hidden="true">ten</span
+    ><span>Reservations<small>Member experiences</small></span></a
+  >
+  <nav class="main-nav" aria-label="Main navigation">
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page"
+      ><app-icon name="grid" />Inventory</a
+    >
+    <a routerLink="/bookings/" routerLinkActive="active" ariaCurrentWhenActive="page"
+      ><app-icon name="ticket" />Bookings</a
+    >
+  </nav>
+  <div class="account-controls">
+    <span
+      >Signed in as <strong>{{ session.user()?.username }}</strong></span
+    >
+    <button type="button" (click)="signOut()" [disabled]="signingOut()">
+      {{ signingOut() ? 'Signing out…' : 'Sign out' }}
+    </button>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="member-policy">
+      <app-icon name="sparkle" />
+      <h2>A little planning.<br />A great experience.</h2>
+      <p>Reserve up to two experiences per member. A cancelled place becomes available again.</p>
+    </div>
+    <p class="sidebar-signature">Thoughtfully reserved.</p>
+  </div>
+</aside>
+<div class="workspace">
+  <header class="workspace-header">
+    <span
+      >Member experiences <span aria-hidden="true" class="breadcrumb-divider">/</span>
+      <strong>{{ bookingPage ? 'Bookings' : 'Inventory' }}</strong></span
+    ><span class="workspace-label"
+      ><span class="status-dot" aria-hidden="true"></span>Reservations desk</span
+    >
+  </header>
+  <main id="main" class="page">
+    @if (error()) {
+      <p class="notice error-notice" role="alert">{{ error() }}</p>
+    }
+    @if (session.user()) {
+      <router-outlet />
+    } @else {
+      <p role="status">Checking your staff session…</p>
+    }
+  </main>
+  <footer class="site-footer">
+    <span>Ten Reservations</span><span>All booking times are shown in UTC</span>
+  </footer>
+</div>
+<app-notifications />

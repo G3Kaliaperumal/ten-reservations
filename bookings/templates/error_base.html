@@ -1,0 +1,15 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Unable to continue{% endblock %} | Ten Reservations</title>
+  <link rel="stylesheet" href="{% static 'bookings/app.css' %}">
+</head>
+<body class="auth-page"><main class="auth-card">
+  <span class="brand-mark" aria-hidden="true">ten</span>
+  <h1>{% block heading %}Unable to continue{% endblock %}</h1>
+  <p>{% block message %}Please try again later.{% endblock %}</p>
+  <a class="button button-primary" href="/accounts/login/">Return to sign in</a>
+</main></body>
+</html>

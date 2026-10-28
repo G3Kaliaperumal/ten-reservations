@@ -1,0 +1,202 @@
+<header class="page-heading">
+  <div>
+    <h1>Experience inventory<span class="heading-dot" aria-hidden="true">.</span></h1>
+    <p>A world of possibilities. Find the next experience for your member.</p>
+  </div>
+  <a class="button" routerLink="/bookings/"
+    ><span aria-hidden="true" class="plus">+</span> Make a booking</a
+  >
+</header>
+<div class="collection-context">
+  <p>
+    <strong>{{ data()?.total_items ?? '—' }} experiences</strong> in the collection
+    <span class="context-divider" aria-hidden="true"></span>
+    {{ data()?.member_count ?? '—' }} members
+  </p>
+  <p><app-icon name="info" /> Up to two bookings per member</p>
+</div>
+<section
+  #inventoryLayout
+  class="inventory-results"
+  aria-label="Inventory results"
+  [attr.aria-busy]="loading()"
+>
+  <form class="filters" role="search" (ngSubmit)="apply()">
+    <div class="search-field">
+      <label class="sr-only" for="q">Search experiences</label><app-icon name="search" /><input
+        type="search"
+        id="q"
+        name="q"
+        [(ngModel)]="query"
+        placeholder="Search the collection by experience"
+        maxlength="200"
+      />
+    </div>
+    <button class="button secondary" type="submit">Search</button>
+    @if (appliedQuery() || status() !== 'all') {
+      <a class="clear-filters" routerLink="/">Clear</a>
+    }
+  </form>
+  <div class="quick-filters" role="group" aria-label="Experience availability filters">
+    @for (filter of filters; track filter.key) {
+      <button
+        type="button"
+        [class.is-selected]="status() === filter.key"
+        [class.expired-filter]="filter.key === 'expired'"
+        [attr.aria-pressed]="status() === filter.key"
+        (click)="quickFilter(filter.key)"
+      >
+        {{ filter.label }}<span>{{ data()?.filter_counts?.[filter.key] ?? '—' }}</span>
+      </button>
+    }
+  </div>
+  <p class="filter-note">
+    Available means in stock and not expired. Low stock means 1–2 places left. Expiry dates use UTC.
+  </p>
+  @if (error()) {
+    <div class="notice error-notice" role="alert">
+      <p>{{ error() }}</p>
+      <button class="button secondary" type="button" (click)="load()">Try again</button
+      ><a class="clear-filters" routerLink="/">Reset filters</a>
+    </div>
+  }
+  @if (loading()) {
+    <div class="loading-state" role="status">Loading experiences…</div>
+  } @else if (!error() && data(); as data) {
+    <div class="results-heading">
+      <h2>
+        {{
+          appliedQuery()
+            ? 'Results for “' + appliedQuery() + '”'
+            : status() === 'all'
+              ? 'Explore the collection'
+              : status() === 'low_stock'
+                ? 'Just a few places left'
+                : status() === 'available'
+                  ? 'Available experiences'
+                  : status() === 'expired'
+                    ? 'Expired experiences'
+                    : 'Sold-out experiences'
+        }}
+      </h2>
+      <p class="results-count" role="status">
+        {{ data.pagination.total_count }} matching experience{{
+          data.pagination.total_count === 1 ? '' : 's'
+        }}
+      </p>
+    </div>
+    <div class="experience-grid">
+      @for (item of data.items; track item.id; let index = $index) {
+        <article
+          class="experience"
+          [class.experience-unavailable]="!item.is_bookable"
+          [class.experience-expired]="item.is_expired"
+        >
+          <div class="experience-cover">
+            @if (item.cover_url) {
+              <img
+                [src]="item.cover_url"
+                alt=""
+                width="900"
+                height="560"
+                [attr.loading]="index > 2 ? 'lazy' : 'eager'"
+                decoding="async"
+              />
+            } @else {
+              <div class="cover-fallback" aria-hidden="true">
+                <svg viewBox="0 0 180 120">
+                  <circle cx="90" cy="60" r="41" />
+                  <ellipse cx="90" cy="60" rx="20" ry="41" />
+                  <path d="M49 60h82M55 39h70M55 81h70" />
+                </svg>
+              </div>
+            }
+            <div class="cover-statuses">
+              @if (item.is_expired) {
+                <span class="badge expired-badge">Expired</span>
+              }
+              @if (!item.remaining_count) {
+                <span class="badge sold-out">Sold out</span>
+              }
+              @if (item.is_bookable && item.remaining_count <= 2) {
+                <span class="badge warning">Low stock</span>
+              }
+            </div>
+          </div>
+          <div class="experience-body">
+            <div class="experience-title">
+              <h3>{{ item.title }}</h3>
+              <span class="record-id">#{{ item.id }}</span>
+            </div>
+            <p class="experience-expiry" [class.is-expired]="item.is_expired">
+              {{ item.is_expired ? 'Expired' : 'Book through' }}
+              {{ item.expiration_date | dateOnly }}
+            </p>
+            <p class="description">
+              {{ item.description | slice: 0 : 110 }}{{ item.description.length > 110 ? '…' : '' }}
+            </p>
+            <details class="item-details">
+              <summary>Item details <span aria-hidden="true">+</span></summary>
+              <div class="item-details-body">
+                <p>{{ item.description }}</p>
+                <p><strong>Expiry date</strong><br />{{ item.expiration_date | dateOnly }}</p>
+                <p>
+                  Bookings close after the expiry date in UTC. Expired experiences cannot be booked;
+                  existing bookings can still be cancelled.
+                </p>
+              </div>
+            </details>
+          </div>
+          <div class="experience-footer">
+            <p class="availability" [class.availability-empty]="!item.is_bookable">
+              <span class="status-dot" aria-hidden="true"></span
+              ><strong>{{ item.remaining_count }}</strong> remaining
+            </p>
+            @if (item.is_bookable) {
+              <a
+                class="book-link"
+                routerLink="/bookings/"
+                [queryParams]="{ item: item.id }"
+                [attr.aria-label]="'Book experience: ' + item.title + ' #' + item.id"
+                >Book experience <app-icon name="arrow"
+              /></a>
+            } @else {
+              <span class="unavailable-label" [class.expiry-unavailable]="item.is_expired">{{
+                item.is_expired ? 'Booking closed' : 'Unavailable'
+              }}</span>
+            }
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">
+          <app-icon name="search" />
+          <h2>{{ data.total_items ? 'No experiences match' : 'No inventory loaded' }}</h2>
+          <p>
+            {{
+              data.total_items
+                ? 'Try another title or availability filter.'
+                : 'Load the supplied data using the setup instructions, then refresh this page.'
+            }}
+          </p>
+          @if (data.total_items) {
+            <a class="button secondary" routerLink="/">Clear filters</a>
+          }
+        </div>
+      }
+    </div>
+    <app-pagination
+      controlId="inventory-page-size"
+      noun="experiences"
+      [data]="data.pagination"
+      [sizeOptions]="sizeOptions()"
+      [sizeValue]="sizeValue()"
+      [busy]="loading()"
+      (pageChange)="pageChange($event)"
+      (sizeChange)="sizeChange($event)"
+    />
+    <p class="collection-note">
+      Images illustrate the destinations and experiences. Open item details for the supplied
+      description.
+    </p>
+  }
+</section>

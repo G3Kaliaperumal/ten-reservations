@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.sqlite3-*
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.local/
+.coverage
+htmlcov/
+staticfiles/
+.pytest_cache/
+.idea/
+.vscode/
+README.personal.md
+Engineering Lead Take Home Technical Challenge.docx
+artifacts/
+
+# Angular build/dependency caches
+node_modules/
+.angular/
+frontend/dist/
+frontend/coverage/

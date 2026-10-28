@@ -1,0 +1,29 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#59428c">
+  <title>Staff sign in | Ten Reservations</title>
+  <link rel="icon" href="{% static 'bookings/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'bookings/app.css' %}">
+</head>
+<body class="auth-page">
+  <main class="auth-card" id="main">
+    <span class="brand-mark" aria-hidden="true">ten</span>
+    <p class="eyebrow">THE RESERVATIONS DESK</p>
+    <h1>Welcome back.</h1>
+    <p class="auth-intro">Sign in to look after your members’ next great experience.</p>
+    {% if form.errors %}<div class="auth-error" role="alert">Please enter a correct username and password for a staff account.</div>{% endif %}
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div><label for="id_username">Username</label>{{ form.username }}</div>
+      <div><label for="id_password">Password</label>{{ form.password }}</div>
+      <button type="submit" class="button button-primary">Sign in</button>
+    </form>
+    <p class="auth-note">Access is reserved for authorised staff. Contact your administrator if you need an account.</p>
+  </main>
+</body>
+</html>

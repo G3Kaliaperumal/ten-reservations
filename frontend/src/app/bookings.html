@@ -1,0 +1,290 @@
+<header class="page-heading">
+  <div>
+    <h1>Member bookings<span class="heading-dot" aria-hidden="true">.</span></h1>
+    <p>A considered plan, a confirmed place. Take care of every reservation here.</p>
+  </div>
+  <a class="button secondary" routerLink="/">Browse inventory</a>
+</header>
+@if (loadError()) {
+  <div class="notice error-notice" role="alert">
+    <p>{{ loadError() }}</p>
+    <button type="button" class="button secondary" (click)="refresh()">Refresh availability</button>
+  </div>
+}
+@if (loading() && !options()) {
+  <p class="loading-state" role="status">Loading members and bookings…</p>
+}
+@if (options()) {
+  @if (!hasData()) {
+    <div class="notice">
+      No member or inventory data is available. Follow the README setup instructions to load the CSV
+      files.
+    </div>
+  }
+  <div class="forms-layout">
+    <section class="form-panel booking-panel" aria-labelledby="book-title">
+      <div class="panel-heading">
+        <span class="panel-icon" aria-hidden="true"><app-icon name="ticket" /></span
+        ><span class="badge">{{ options()?.max_bookings }} per member</span>
+      </div>
+      <h2 id="book-title">Make a booking</h2>
+      <p>Choose a member and find their next experience.</p>
+      <form
+        #bookForm
+        novalidate
+        (ngSubmit)="submitBooking(bookForm)"
+        [attr.aria-busy]="operation() === 'book'"
+      >
+        @if (bookError()) {
+          <div class="auth-error form-error" role="alert">{{ bookError() }}</div>
+        }
+        <app-choice
+          controlId="book-member"
+          label="Member"
+          [choices]="members()"
+          [(value)]="bookMember"
+          [error]="bookSubmitted() && !bookMember() ? 'Choose a member.' : ''"
+          [disabled]="!!operation()"
+        />
+        <p class="field-help member-count-help">
+          The count includes the member’s existing bookings.
+        </p>
+        @if (selectedMemberOverLimit()) {
+          <p class="count-warning" role="note">
+            This imported count exceeds the booking limit. New bookings are blocked; existing
+            bookings can still be cancelled.
+          </p>
+        }
+        <app-choice
+          controlId="book-item"
+          label="Inventory item"
+          kind="experience"
+          [choices]="items()"
+          [(value)]="bookItem"
+          [error]="bookSubmitted() && !bookItem() ? 'Choose an inventory item.' : ''"
+          [disabled]="!!operation()"
+        />
+        @if (selectedItemUnavailable()) {
+          <p class="count-warning" role="note">
+            This experience is expired or sold out and cannot be booked.
+          </p>
+        }
+        @if (!hasBookableItems()) {
+          <p class="count-warning" role="note">
+            No experiences are currently available to book. Existing bookings can still be
+            cancelled.
+          </p>
+        }
+        <div class="booking-policy">
+          <app-icon name="shield" />
+          <p>Availability and the member’s limit are checked when you book.</p>
+        </div>
+        <button
+          class="button booking-submit"
+          type="submit"
+          [disabled]="
+            !hasData() ||
+            !hasBookableItems() ||
+            selectedItemUnavailable() ||
+            !!operation() ||
+            loading()
+          "
+        >
+          {{ operation() === 'book' ? 'Booking…' : 'Book experience' }}
+        </button>
+        <p class="form-help">
+          Names and titles can repeat. Use the #ID to identify the correct record.
+        </p>
+      </form>
+    </section>
+    <section class="form-panel cancel-panel" aria-labelledby="cancel-title">
+      <span class="panel-icon quiet-icon" aria-hidden="true"><app-icon name="cancel" /></span>
+      <h2 id="cancel-title">Cancel a booking</h2>
+      <p>Plans change. Return a place to the collection using its booking reference.</p>
+      <form
+        #cancelForm
+        novalidate
+        (ngSubmit)="submitCancellation(cancelForm)"
+        [attr.aria-busy]="operation() === 'cancel'"
+      >
+        @if (cancelError()) {
+          <div class="auth-error form-error" role="alert">{{ cancelError() }}</div>
+        }
+        <app-choice
+          controlId="cancel-member"
+          label="Member"
+          [choices]="members()"
+          [(value)]="cancelMember"
+          [error]="cancelSubmitted() && !cancelMember() ? 'Choose a member.' : ''"
+          [disabled]="!!operation()"
+        />
+        <div class="form-field">
+          <label for="cancel-reference">Booking reference</label
+          ><input
+            id="cancel-reference"
+            name="reference"
+            type="text"
+            [(ngModel)]="reference"
+            [disabled]="!!operation()"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="40"
+            required
+            [attr.aria-invalid]="cancelSubmitted() && !validReference()"
+            [attr.aria-describedby]="
+              cancelSubmitted() && !validReference() ? 'reference-error' : null
+            "
+          />
+          @if (cancelSubmitted() && !validReference()) {
+            <p id="reference-error" class="choice-error">Enter a valid booking reference (UUID).</p>
+          }
+        </div>
+        <button
+          class="button secondary cancel-submit"
+          type="submit"
+          [disabled]="!hasData() || !!operation() || loading()"
+        >
+          {{ operation() === 'cancel' ? 'Cancelling…' : 'Cancel booking' }}
+        </button>
+        <p class="form-help">
+          Cancellation restores one place and reduces the member’s booking count.
+        </p>
+      </form>
+    </section>
+  </div>
+  <section id="booking-history" class="recent-section" aria-labelledby="recent-title">
+    <div class="section-heading">
+      <div>
+        <h2 id="recent-title">Booking history</h2>
+        <p>Find and review reservations created here.</p>
+      </div>
+      <span class="badge neutral">Booking activity</span>
+    </div>
+    <form
+      class="filters history-filters"
+      role="search"
+      aria-label="Filter bookings"
+      (ngSubmit)="filterHistory()"
+    >
+      <div class="search-field">
+        <label class="sr-only" for="booking-search">Search bookings</label
+        ><app-icon name="search" /><input
+          id="booking-search"
+          name="booking-query"
+          type="search"
+          maxlength="200"
+          [(ngModel)]="historyQuery"
+          placeholder="Member, experience or booking reference"
+        />
+      </div>
+      <app-select
+        controlId="booking-status"
+        label="Status"
+        [options]="statusOptions"
+        [value]="historyStatus"
+        (valueChange)="selectHistoryStatus($event)"
+      />
+      <button type="submit" class="button secondary">Apply filters</button>
+      @if (appliedHistoryQuery() || appliedHistoryStatus() !== 'all') {
+        <button type="button" class="clear-filters text-button" (click)="clearHistory()">
+          Clear
+        </button>
+      }
+    </form>
+    @if (historyError()) {
+      <div class="notice error-notice" role="alert">
+        <p>{{ historyError() }}</p>
+        <button type="button" class="button secondary" (click)="loadHistory()">Try again</button>
+      </div>
+    }
+    @if (historyLoading()) {
+      <p class="loading-state" role="status">Loading bookings…</p>
+    } @else if (!historyError()) {
+      @if (recent().length) {
+        <div class="table-scroll" role="region" aria-label="Booking history" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Experience</th>
+                <th scope="col">Member</th>
+                <th scope="col">Booking reference</th>
+                <th scope="col">Booked (UTC)</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (booking of recent(); track booking.booking_reference) {
+                <tr>
+                  <td class="table-experience">{{ booking.item_title }}</td>
+                  <td>{{ booking.member_name }}</td>
+                  <td>
+                    <div class="reference-actions">
+                      <code class="table-reference">{{ booking.booking_reference }}</code
+                      ><button
+                        class="copy-button"
+                        type="button"
+                        title="Copy booking reference"
+                        [attr.aria-label]="
+                          'Copy reference for ' + booking.item_title + ', ' + booking.member_name
+                        "
+                        (click)="notices.copy(booking.booking_reference)"
+                      >
+                        <app-icon name="copy" />
+                        @if (notices.copiedReference() === booking.booking_reference) {
+                          <span class="copy-feedback" aria-hidden="true">Copied!</span>
+                        }
+                      </button>
+                    </div>
+                  </td>
+                  <td class="table-date">
+                    {{ booking.booked_at | date: 'd MMM yyyy' : 'UTC'
+                    }}<small>{{ booking.booked_at | date: 'HH:mm' : 'UTC' }}</small>
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      [class.sold-out]="booking.status === 'cancelled'"
+                      [class.success]="booking.status === 'active'"
+                      ><span class="status-dot" aria-hidden="true"></span
+                      >{{ booking.status | titlecase }}</span
+                    >
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <h3>
+            {{
+              appliedHistoryQuery() || appliedHistoryStatus() !== 'all'
+                ? 'No bookings match'
+                : 'No bookings yet'
+            }}
+          </h3>
+          <p>
+            {{
+              appliedHistoryQuery() || appliedHistoryStatus() !== 'all'
+                ? 'Try another search or status filter.'
+                : 'Your first booking will appear here with its reference and status.'
+            }}
+          </p>
+        </div>
+      }
+      @if (historyPagination(); as pagination) {
+        <app-pagination
+          controlId="bookings-page-size"
+          noun="bookings"
+          [data]="pagination"
+          [busy]="historyLoading() || !!operation()"
+          (pageChange)="historyPageChange($event)"
+          (sizeChange)="historySizeChange($event)"
+        />
+      }
+    }
+    <p class="collection-note">
+      Imported booking counts do not include individual references and do not appear here.
+    </p>
+  </section>
+}
