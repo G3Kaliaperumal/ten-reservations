@@ -4,6 +4,8 @@ A staff reservations desk using **Angular 22.2.3**, **Django 5.2.18**, and **SQL
 
 The existing plum/lavender styling, system fonts, photographs, searchable selectors, and five-second notifications are preserved. No external fonts or images are fetched at runtime. JavaScript is required for Angular.
 
+[Application screenshots](Screenshots.md) show the interface using synthetic demo data. [Agent working guide](Agent.md) explains the architecture, project conventions, and validation workflow for contributors.
+
 ## Requirements
 
 - Python 3.12–3.14 with pip/venv; verified with Python 3.14.8.
